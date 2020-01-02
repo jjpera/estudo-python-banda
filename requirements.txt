@@ -1,3 +1,6 @@
 connexion == 2.2.0
 python_dateutil == 2.6.0
 setuptools >= 21.0.0
+Flask==1.0.2
+flask-restful==0.3.6
+markdown==2.6.11
