@@ -6,8 +6,9 @@
 #from flask_restful import Resource, Api, reqparse
 
 from flask_restful import Resource
-from flask import request
+from flask import request, jsonify
 from service import banda_service
+from util import JSONEncoder
 
 class Banda(Resource):
     def get(self):
@@ -16,25 +17,21 @@ class Banda(Resource):
         pagina = request.args.get("pagina")
         qtdepagina = request.args.get("qtdePagina")
 
-        return banda_service.find(velocidade, tecnologia, pagina, qtdepagina) , 200
+        if not velocidade:
+            velocidade = ""
+
+        if not tecnologia:
+            tecnologia = ""
+
+        return JSONEncoder().encode(banda_service.find(velocidade, tecnologia, int(pagina), int(qtdepagina))), 200
 
     def post(self):
-        banda = {
-            "velocidade": request.form.get("velocidade"),
-            "tecnologia": request.form.get("tecnologia")
-        }
-
-        return banda_service.insert(banda) , 200
+        return JSONEncoder().encode(banda_service.insert(request.json)), 200
 
 class BandaId(Resource):
-    def update(self, identifier):
-        banda = {
-            "_id": request.form.get("id"),
-            "velocidade": request.form.get("velocidade"),
-            "tecnologia": request.form.get("tecnologia")
-        }
+    def put(self, id):
+        return JSONEncoder().encode(banda_service.update(id, request.json)), 200
 
-        return banda_service.update(identifier, banda), 200
+    def delete(self, id):
+        return JSONEncoder().encode(banda_service.delete(id)), 200
 
-    def delete(self, identifier):
-        return banda_service.delete(identifier), 200

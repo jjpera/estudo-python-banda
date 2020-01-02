@@ -1,41 +1,45 @@
 from repository import db
+from util import ModelBanda
+from bson import ObjectId
 
 col = db["banda"]
 
 def insert(banda):
-    banda.id = col.insert_one(banda)
+    print("insert:" + banda["velocidade"])
+
+    col.insert_one(banda)
+
     return banda
 
 def findById(id):
-    return col.findOne({ "_id": id })
+    print("findById:" + id)
+    cursor = col.find({ "_id": ObjectId(id) })
+    if cursor.count() != 1:
+        raise Exception("Id não encontrado")
+
+    return cursor[0]
 
 def find(velocidade, tecnologia, pagina, qtdePagina):
-    bandas = col.find(generateQuery(velocidade, tecnologia))\
+    print("velocidade: " + velocidade + " tecnologia: " + tecnologia + " pagina: " + str(pagina) + " qtdePagina: " + str(qtdePagina))
+
+    bandas = col.find(ModelBanda.generateQuery(velocidade, tecnologia))\
         .sort("tecnologia")\
         .skip(pagina*qtdePagina)\
         .limit((pagina+1)*qtdePagina)
 
-    return bandas
+    return list(bandas)
 
 def count(velocidade, tecnologia):
-    return col.find(generateQuery(velocidade, tecnologia)).count(True)
+    return col.find(ModelBanda.generateQuery(velocidade, tecnologia)).count(True)
 
 def update(id, banda):
-    newvalues = { "$set": [{ "velocidade": banda.velocidade }, { "tecnologia": banda.tecnologia }] }
+    newvalues = { "$set": { "velocidade": banda["velocidade"], "tecnologia": banda["tecnologia"] } }
 
-    col.update_one({ "_id": id }, newvalues)
+    col.update_one({ "_id": ObjectId(id) }, newvalues)
+    banda["_id"] = ObjectId(id)
+
     return banda
 
 def delete(id):
-    col.delete_one({"_id" : id})
+    col.delete_one({"_id" : ObjectId(id)})
     return
-
-def generateQuery(velocidade, tecnologia):
-    query = {}
-    if velocidade != "" and tecnologia != "":
-        query = {[{ "velocidade": velocidade }, { "tecnologia": tecnologia }]}
-    elif velocidade != "":
-        query = { "velocidade": velocidade }
-    elif tecnologia != "":
-        query = { "tecnologia": tecnologia }
-    return query

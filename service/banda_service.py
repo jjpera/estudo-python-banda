@@ -1,4 +1,5 @@
 from repository import banda_repository
+from util import ModelBanda
 
 def insert(banda):
     retornoBanda = {}
@@ -8,14 +9,14 @@ def insert(banda):
         # se funcionar, chamar serviço rest de historico
         # serviceHistorico.insert(historico)
 
-        retornoBanda = retornoBandaDefault()
-        retornoBanda.lista_bandas = [banda]
-    except:
+        retornoBanda = ModelBanda.retornoBandaDefault()
+        retornoBanda["lista_bandas"] = [banda]
+    except Exception as e:
         retornoBanda = {
             "codigo": 500,
-            "descricao": "Erro ao salvar registro"
+            "descricao": "Erro: " + str(e)
         }
-    
+
     return retornoBanda
 
 def find(velocidade, tecnologia, pagina, qtdePagina):
@@ -26,62 +27,53 @@ def find(velocidade, tecnologia, pagina, qtdePagina):
         # se funcionar, chamar serviço rest de historico
         # serviceHistorico.insert(historico)
 
-        retornoBanda = retornoBandaDefault()
-        retornoBanda.lista_bandas = bandas
-    except:
+        retornoBanda = ModelBanda.retornoBandaDefaultParam(pagina, qtdePagina)
+        retornoBanda["lista_bandas"] = bandas
+        retornoBanda["registros"] = banda_repository.count(velocidade, tecnologia)
+    except Exception as e:
         retornoBanda = {
             "codigo": 500,
-            "descricao": "Erro ao buscar registros"
+            "descricao": "Erro: " + str(e)
         }
-    
+
     return retornoBanda
 
 def update(id, banda):
     retornoBanda = {}
     try:
+        banda_repository.findById(id)
+
         banda = banda_repository.update(id, banda)
 
         # se funcionar, chamar serviço rest de historico
         # serviceHistorico.insert(historico)
 
-        retornoBanda = retornoBandaDefault()
-        retornoBanda.lista_bandas = [banda]
-    except:
+        retornoBanda = ModelBanda.retornoBandaDefault()
+        retornoBanda["lista_bandas"] = [banda]
+    except Exception as e:
         retornoBanda = {
             "codigo": 500,
-            "descricao": "Erro ao atualizar registro"
+            "descricao": "Erro: " + str(e)
         }
-    
+
     return retornoBanda
 
 def delete(id):
     retornoBanda = {}
     try:
         banda = banda_repository.findById(id)
-        
+
         banda_repository.delete(id)
 
         # se funcionar, chamar serviço rest de historico
         # serviceHistorico.insert(historico)
 
-        retornoBanda = retornoBandaDefault()
-        retornoBanda.lista_bandas = [banda]
-    except:
+        retornoBanda = ModelBanda.retornoBandaDefault()
+        retornoBanda["lista_bandas"] = [banda]
+    except Exception as e:
         retornoBanda = {
             "codigo": 500,
-            "descricao": "Erro ao remover registro"
+            "descricao": "Erro: " + str(e)
         }
 
     return retornoBanda
-
-def retornoBandaDefault():
-    return retornoBandaDefaultParam(0, 1)
-
-def retornoBandaDefaultParam(pagina, qtde_pagina):
-    return {
-        'codigo': 0,
-        'descricao': "success",
-        'registros': 0,
-        'pagina': pagina,
-        'qtde_pagina': qtde_pagina
-    }

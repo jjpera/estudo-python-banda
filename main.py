@@ -15,6 +15,6 @@ def index():
     return 'Hello World'
 
 api.add_resource(Banda, '/bandas/banda')
-api.add_resource(BandaId, '/bandas/banda/<string:identifier>')
+api.add_resource(BandaId, '/bandas/banda/<id>')
 
 app.run(host='0.0.0.0', port=8086, debug=True)
