@@ -7,6 +7,7 @@
 
 from flask_restful import Resource
 from flask import request
+from service import banda_service
 
 class Banda(Resource):
     def get(self):
@@ -15,14 +16,25 @@ class Banda(Resource):
         pagina = request.args.get("pagina")
         qtdepagina = request.args.get("qtdePagina")
 
-        return 'velocidade: ' + velocidade + ' tecnologia: ' + tecnologia + ' pagina: ' + pagina + ' qtdepagina: ' + qtdepagina , 200
+        return banda_service.find(velocidade, tecnologia, pagina, qtdepagina) , 200
 
     def post(self):
-        return 'OK' , 200
+        banda = {
+            "velocidade": request.form.get("velocidade"),
+            "tecnologia": request.form.get("tecnologia")
+        }
+
+        return banda_service.insert(banda) , 200
 
 class BandaId(Resource):
     def update(self, identifier):
-        return 'OK', 200
+        banda = {
+            "_id": request.form.get("id"),
+            "velocidade": request.form.get("velocidade"),
+            "tecnologia": request.form.get("tecnologia")
+        }
+
+        return banda_service.update(identifier, banda), 200
 
     def delete(self, identifier):
-        return 'OK', 200
+        return banda_service.delete(identifier), 200

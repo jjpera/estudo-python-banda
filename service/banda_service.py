@@ -71,7 +71,7 @@ def delete(id):
             "codigo": 500,
             "descricao": "Erro ao remover registro"
         }
-    
+
     return retornoBanda
 
 def retornoBandaDefault():
