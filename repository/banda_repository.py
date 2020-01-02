@@ -6,29 +6,36 @@ def insert(banda):
     banda.id = col.insert_one(banda)
     return banda
 
-def find(velocidade, tecnologia, pagina, qtdePagina):
-    myquery = {}
-    if velocidade != "" and tecnologia != "":
-        myquery = {[{ "velocidade": velocidade }, { "tecnologia": tecnologia }]}
-    elif velocidade != "":
-        myquery = { "velocidade": velocidade }
-    elif tecnologia != "":
-        myquery = { "tecnologia": tecnologia }
+def findById(id):
+    return col.findOne({ "_id": id })
 
-    bandas = col.find(myquery).sort("tecnologia").skip(pagina*qtdePagina).limit((pagina+1)*qtdePagina)
+def find(velocidade, tecnologia, pagina, qtdePagina):
+    bandas = col.find(generateQuery(velocidade, tecnologia))\
+        .sort("tecnologia")\
+        .skip(pagina*qtdePagina)\
+        .limit((pagina+1)*qtdePagina)
+
     return bandas
 
+def count(velocidade, tecnologia):
+    return col.find(generateQuery(velocidade, tecnologia)).count(True)
+
 def update(id, banda):
-    myquery = { "_id": id }
     newvalues = { "$set": [{ "velocidade": banda.velocidade }, { "tecnologia": banda.tecnologia }] }
 
-    col.update_one({myquery}, newvalues)
+    col.update_one({ "_id": id }, newvalues)
     return banda
 
 def delete(id):
-
-    banda = col.find_one({"_id" : id})
-
     col.delete_one({"_id" : id})
+    return
 
-    return banda
+def generateQuery(velocidade, tecnologia):
+    query = {}
+    if velocidade != "" and tecnologia != "":
+        query = {[{ "velocidade": velocidade }, { "tecnologia": tecnologia }]}
+    elif velocidade != "":
+        query = { "velocidade": velocidade }
+    elif tecnologia != "":
+        query = { "tecnologia": tecnologia }
+    return query
