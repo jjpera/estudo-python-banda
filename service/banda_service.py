@@ -1,13 +1,13 @@
 from repository import banda_repository
 from util import ModelBanda
+from service import historico_service
 
 def insert(banda):
     retornoBanda = {}
     try:
         banda = banda_repository.insert(banda)
 
-        # se funcionar, chamar serviço rest de historico
-        # serviceHistorico.insert(historico)
+        historico_service.insert("post", banda)
 
         retornoBanda = ModelBanda.retornoBandaDefault()
         retornoBanda["lista_bandas"] = [banda]
@@ -24,8 +24,7 @@ def find(velocidade, tecnologia, pagina, qtdePagina):
     try:
         bandas = banda_repository.find(velocidade, tecnologia, pagina, qtdePagina)
 
-        # se funcionar, chamar serviço rest de historico
-        # serviceHistorico.insert(historico)
+        historico_service.insert("get", {"velocidade": velocidade, "tecnologia": tecnologia})
 
         retornoBanda = ModelBanda.retornoBandaDefaultParam(pagina, qtdePagina)
         retornoBanda["lista_bandas"] = bandas
@@ -45,8 +44,7 @@ def update(id, banda):
 
         banda = banda_repository.update(id, banda)
 
-        # se funcionar, chamar serviço rest de historico
-        # serviceHistorico.insert(historico)
+        historico_service.insert("put", banda)
 
         retornoBanda = ModelBanda.retornoBandaDefault()
         retornoBanda["lista_bandas"] = [banda]
@@ -65,8 +63,7 @@ def delete(id):
 
         banda_repository.delete(id)
 
-        # se funcionar, chamar serviço rest de historico
-        # serviceHistorico.insert(historico)
+        historico_service.insert("delete", banda)
 
         retornoBanda = ModelBanda.retornoBandaDefault()
         retornoBanda["lista_bandas"] = [banda]

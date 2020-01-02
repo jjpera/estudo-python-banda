@@ -5,7 +5,7 @@ from bson import ObjectId
 col = db["banda"]
 
 def insert(banda):
-    print("insert:" + banda["velocidade"])
+    print("insert:" + banda["velocidade"] + " - " + banda["tecnologia"])
 
     col.insert_one(banda)
 
